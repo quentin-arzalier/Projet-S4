@@ -11,13 +11,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Machine<T extends Transition<T>> {
-    private ObservableSet<Etat<T>> etats;
+public abstract class Machine {
+    private ObservableSet<Etat> etats;
     private ObjectProperty<EventHandler<WorkerStateEvent>> onRunning;
     private ObjectProperty<EventHandler<WorkerStateEvent>> onSucceeded;
     private ObjectProperty<EventHandler<WorkerStateEvent>> onCancelled;
 
-    public Machine(Set<Etat<T>> etats) {
+    public Machine(Set<Etat> etats) {
         this.etats = FXCollections.observableSet(etats);
         onRunning = new SimpleObjectProperty<>();
         onSucceeded = new SimpleObjectProperty<>();
@@ -66,7 +66,7 @@ public abstract class Machine<T extends Transition<T>> {
      *
      * @param etat etat a ajouter
      */
-    public void ajouterEtat(Etat<T> etat) {
+    public void ajouterEtat(Etat etat) {
         etats.add(etat);
     }
 
@@ -75,15 +75,15 @@ public abstract class Machine<T extends Transition<T>> {
      *
      * @param etat etat a supprimer
      */
-    public void supprimerEtat(Etat<T> etat) {
+    public void supprimerEtat(Etat etat) {
         etats.remove(etat);
     }
 
     /**
      * @return transition de la machine
      */
-    public Set<T> getTransitions() {
-        Set<T> transitions = new HashSet<>();
+    public Set<Transition> getTransitions() {
+        Set<Transition> transitions = new HashSet<>();
         etats.forEach(e -> transitions.addAll(e.getListeTransitions()));
         return transitions;
     }
@@ -96,22 +96,22 @@ public abstract class Machine<T extends Transition<T>> {
         etats.clear();
     }
 
-    public ObservableSet<Etat<T>> etatsProperty() {
+    public ObservableSet<Etat> etatsProperty() {
         return etats;
     }
 
     /**
      * @return etats inition de la machine
      */
-    public Set<Etat<T>> getEtatsInitiaux() {
-        Set<Etat<T>> res = new HashSet<>();
-        for (Etat<T> etat : etats) {
+    public Set<Etat> getEtatsInitiaux() {
+        Set<Etat> res = new HashSet<>();
+        for (Etat etat : etats) {
             if (etat.estInitial()) res.add(etat);
         }
         return res;
     }
 
-    public Set<Etat<T>> getEtats() {
+    public Set<Etat> getEtats() {
         return etats;
     }
 

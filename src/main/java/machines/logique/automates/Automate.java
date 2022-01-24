@@ -7,19 +7,20 @@ import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import machines.logique.Etat;
 import machines.logique.Machine;
+import machines.logique.Transition;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Automate extends Machine<TransitionAtmt> {
+public class Automate extends Machine {
     private DoubleProperty progress;
     private ChangeListener<Integer> listenerValueTaskLancer;
     private Task<Integer> taskLancer;
     private String mot;
 
-    public Automate(Set<Etat<TransitionAtmt>> etats) {
+    public Automate(Set<Etat> etats) {
         super(etats);
         progress = new SimpleDoubleProperty();
     }
@@ -29,9 +30,9 @@ public class Automate extends Machine<TransitionAtmt> {
         progress = new SimpleDoubleProperty();
     }
 
-    public Set<Etat<TransitionAtmt>> getEtatsActifs() {
-        Set<Etat<TransitionAtmt>> etatsActifs = new HashSet<>();
-        for (Etat<TransitionAtmt> etat : getEtats()) {
+    public Set<Etat> getEtatsActifs() {
+        Set<Etat> etatsActifs = new HashSet<>();
+        for (Etat etat : getEtats()) {
             if (etat.estActif()) etatsActifs.add(etat);
         }
         return etatsActifs;
@@ -52,9 +53,9 @@ public class Automate extends Machine<TransitionAtmt> {
         int nbEtat = Integer.parseInt(bf.readLine());
 
         for (int i = 0; i < nbEtat; i++) {
-            getEtats().add(new Etat<>());
+            getEtats().add(new Etat());
         }
-        ArrayList<Etat<TransitionAtmt>> etats = new ArrayList<>(getEtats());
+        ArrayList<Etat> etats = new ArrayList<>(getEtats());
         String ligne = bf.readLine();
 
         while (!(ligne == null || ligne.contains("###"))) {
@@ -100,16 +101,16 @@ public class Automate extends Machine<TransitionAtmt> {
         bufferedWriter.write(String.valueOf(getEtats().size()));
         bufferedWriter.newLine();
 
-        ArrayList<Etat<TransitionAtmt>> etats = new ArrayList<>(getEtats());
+        ArrayList<Etat> etats = new ArrayList<>(getEtats());
 
         //ecriture etats initiaux
-        for (Etat<TransitionAtmt> etat : getEtatsInitiaux()) {
+        for (Etat etat : getEtatsInitiaux()) {
             bufferedWriter.write("initial " + etats.indexOf(etat));
             bufferedWriter.newLine();
         }
 
         //ecriture etats terminaux
-        for (Etat<TransitionAtmt> etat : etats) {
+        for (Etat etat : etats) {
             if (etat.estTerminal()) {
                 bufferedWriter.write("terminal " + etats.indexOf(etat));
                 bufferedWriter.newLine();
@@ -117,9 +118,9 @@ public class Automate extends Machine<TransitionAtmt> {
         }
 
         //ecriture transitions
-        for (Etat<TransitionAtmt> etat : etats) {
-            Set<TransitionAtmt> transitions = etat.getListeTransitions();
-            for (TransitionAtmt t : transitions) {
+        for (Etat etat : etats) {
+            Set<Transition> transitions = etat.getListeTransitions();
+            for (Transition t : transitions) {
                 bufferedWriter.write(etats.indexOf(t.getEtatDepart()) + " " + t.getEtiquette() + " " +
                         etats.indexOf(t.getEtatArrivee()));
                 bufferedWriter.newLine();
@@ -187,22 +188,22 @@ public class Automate extends Machine<TransitionAtmt> {
      */
     @Override
     public boolean motReconnu() {
-        for (Etat<TransitionAtmt> etat : getEtats()) {
+        for (Etat etat : getEtats()) {
             if (etat.estTerminal() && etat.estActif()) return true;
         }
         return false;
     }
 
-    public Set<Etat<TransitionAtmt>> getEtatsInitiaux() {
-        Set<Etat<TransitionAtmt>> res = new HashSet<>();
-        for (Etat<TransitionAtmt> etat : getEtats()) {
+    public Set<Etat> getEtatsInitiaux() {
+        Set<Etat> res = new HashSet<>();
+        for (Etat etat : getEtats()) {
             if (etat.estInitial()) res.add(etat);
         }
         return res;
     }
 
     private void step(char lettre) {
-        Set<Etat<TransitionAtmt>> nouveauxActifs = new HashSet<>();
+        Set<Etat> nouveauxActifs = new HashSet<>();
         getEtatsActifs().forEach(e -> nouveauxActifs.addAll(e.cible(lettre)));
         getEtatsActifs().forEach(Etat::desactive);
         nouveauxActifs.forEach(Etat::active);

@@ -13,7 +13,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import machines.gui.mt.VuePrincipaleMT;
-import machines.logique.Transition;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,7 @@ import java.util.Optional;
 public class App extends Application {
     private Stage primaryStage;
     private VueDepart vueDepart;
-    private VuePrincipale<? extends Transition<?>> vuePrincipale;
+    private VuePrincipale vuePrincipale;
     private EventHandler<ActionEvent> eventLancerAutomate = actionEvent -> {
         vueDepart.hide();
         startAutomate();

@@ -15,22 +15,22 @@ import machines.logique.Transition;
 import java.io.*;
 import java.util.ArrayList;
 
-public abstract class VueMachine<T extends Transition<T>> extends Pane {
-    private Machine<T> machine;
-    private VuePrincipale<T> vuePrincipale;
-    private ObservableList<VueEtat<T>> vuesEtatSelectionnes = FXCollections.observableArrayList();
-    private ObservableList<VueTransition<T>> vuesTransitionSelectionnes = FXCollections.observableArrayList();
-    private SetChangeListener<Etat<T>> miseAJourEtats = change -> {
+public abstract class VueMachine extends Pane {
+    private Machine machine;
+    private VuePrincipale vuePrincipale;
+    private ObservableList<VueEtat> vuesEtatSelectionnes = FXCollections.observableArrayList();
+    private ObservableList<VueTransition> vuesTransitionSelectionnes = FXCollections.observableArrayList();
+    private SetChangeListener<Etat> miseAJourEtats = change -> {
         if (change.wasAdded()) {
-            VueEtat<T> vueEtat = new VueEtat<>(change.getElementAdded(), VueMachine.this);
+            VueEtat vueEtat = new VueEtat(change.getElementAdded(), VueMachine.this);
             vueEtat.setLabelNumEtat(machine.getEtats().size() - 1);
             getChildren().add(vueEtat);
         } else if (change.wasRemoved()) {
-            VueEtat<T> vueEtatRemoved = getVueEtat(change.getElementRemoved());
+            VueEtat vueEtatRemoved = getVueEtat(change.getElementRemoved());
             getChildren().remove(vueEtatRemoved);
             for (Node n : getChildren()) {
                 if (n instanceof VueEtat) {
-                    VueEtat<T> vueEtat = (VueEtat<T>) n;
+                    VueEtat vueEtat = (VueEtat) n;
                     if (vueEtat.getNumEtat() > vueEtatRemoved.getNumEtat()) {
                         vueEtat.setLabelNumEtat((vueEtat.getNumEtat() - 1));
                     }
@@ -39,38 +39,38 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
 
         }
     };
-    private ListChangeListener<VueEtat<T>> miseAJourVuesEtatSelectionnes = change -> {
+    private ListChangeListener<VueEtat> miseAJourVuesEtatSelectionnes = change -> {
         while (change.next()) {
             if (change.wasAdded()) {
-                for (VueEtat<T> vueEtat : change.getAddedSubList()) {
+                for (VueEtat vueEtat : change.getAddedSubList()) {
                     vueEtat.getCercle().setStroke(Color.valueOf("#003576"));
                     vueEtat.getCercle().setStrokeType(StrokeType.INSIDE);
                     vueEtat.getCercle().setStrokeWidth(3);
                 }
             }
             if (change.wasRemoved()) {
-                for (VueEtat<T> vueEtat : change.getRemoved()) {
+                for (VueEtat vueEtat : change.getRemoved()) {
                     vueEtat.getCercle().setStroke(null);
                 }
             }
         }
     };
-    private ListChangeListener<VueTransition<T>> miseAJourVuesTransitionSelectionnes = change -> {
+    private ListChangeListener<VueTransition> miseAJourVuesTransitionSelectionnes = change -> {
         while (change.next()) {
             if (change.wasAdded()) {
-                for (VueTransition<T> vueTransition : change.getAddedSubList()) {
+                for (VueTransition vueTransition : change.getAddedSubList()) {
                     vueTransition.setCouleurSelection(true);
                 }
             }
             if (change.wasRemoved()) {
-                for (VueTransition<T> vueTransition : change.getRemoved()) {
+                for (VueTransition vueTransition : change.getRemoved()) {
                     vueTransition.setCouleurSelection(false);
                 }
             }
         }
     };
 
-    public VueMachine(Machine<T> machine, VuePrincipale<T> vuePrincipale) {
+    public VueMachine(Machine machine, VuePrincipale vuePrincipale) {
         this.vuePrincipale = vuePrincipale;
         this.machine = machine;
 
@@ -98,18 +98,18 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
      *
      * @param transition transition de la vueTransition a ajouter
      */
-    public abstract void ajoutVueTransition(T transition);
+    public abstract void ajoutVueTransition(Transition transition);
 
     /**
      * Supprime une vue transition a la vue machine
      *
      * @param transition transition de la vueTransition a supprimer
      */
-    public void supprimerVueTransition(T transition) {
-        VueTransition<T> vueTransition = getVueTransition(transition);
+    public void supprimerVueTransition(Transition transition) {
+        VueTransition vueTransition = getVueTransition(transition);
         if (vueTransition != null) {
             getChildren().remove(vueTransition);
-            ArrayList<VueTransition<T>> vueTransitions =
+            ArrayList<VueTransition> vueTransitions =
                     getVuesTransition(vueTransition.getVueEtatDep(), vueTransition.getVueEtatFin());
             for (int i = 0; i < vueTransitions.size(); i++) {
                 vueTransitions.get(i).positionnerLabelEtiquette(i);
@@ -117,19 +117,19 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
         }
     }
 
-    public Machine<T> getMachine() {
+    public Machine getMachine() {
         return machine;
     }
 
-    public ObservableList<VueTransition<T>> getVuesTransitionSelectionnes() {
+    public ObservableList<VueTransition> getVuesTransitionSelectionnes() {
         return vuesTransitionSelectionnes;
     }
 
-    public ObservableList<VueEtat<T>> getVuesEtatSelectionnes() {
+    public ObservableList<VueEtat> getVuesEtatSelectionnes() {
         return vuesEtatSelectionnes;
     }
 
-    public VuePrincipale<T> getVuePrincipale() {
+    public VuePrincipale getVuePrincipale() {
         return vuePrincipale;
     }
 
@@ -139,10 +139,10 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
      * @param etat etat de la vueEtat
      * @return vueEtat correspondante
      */
-    public VueEtat<T> getVueEtat(Etat<T> etat) {
+    public VueEtat getVueEtat(Etat etat) {
         for (Node n : getChildren()) {
             if (n instanceof VueEtat) {
-                VueEtat<T> vueEtat = (VueEtat<T>) n;
+                VueEtat vueEtat = (VueEtat) n;
                 if (vueEtat.getEtat().equals(etat)) return vueEtat;
             }
         }
@@ -155,10 +155,10 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
      * @param transition transition de la vueTransition
      * @return vueTransition correspondante
      */
-    public VueTransition<T> getVueTransition(T transition) {
+    public VueTransition getVueTransition(Transition transition) {
         for (Node n : getChildren()) {
             if (n instanceof VueTransition) {
-                VueTransition<T> vueTransition = (VueTransition<T>) n;
+                VueTransition vueTransition = (VueTransition) n;
                 if (vueTransition.getTransition().equals(transition)) return vueTransition;
             }
         }
@@ -172,14 +172,14 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
      * @param vueEtat2 etat d'arrivee
      * @return liste des vueTransition ou null si il n'y en a pas
      */
-    public ArrayList<VueTransition<T>> getVuesTransition(VueEtat<T> vueEtat1, VueEtat<T> vueEtat2) {
-        ArrayList<VueTransition<T>> res = new ArrayList<>();
-        for (T t : vueEtat1.getEtat().getListeTransitions()) {
+    public ArrayList<VueTransition> getVuesTransition(VueEtat vueEtat1, VueEtat vueEtat2) {
+        ArrayList<VueTransition> res = new ArrayList<>();
+        for (Transition t : vueEtat1.getEtat().getListeTransitions()) {
             if (t.getEtatArrivee() == vueEtat2.getEtat()) {
                 if (!res.contains(getVueTransition(t))) res.add(getVueTransition(t));
             }
         }
-        for (T t : vueEtat2.getEtat().getListeTransitions()) {
+        for (Transition t : vueEtat2.getEtat().getListeTransitions()) {
             if (t.getEtatArrivee() == vueEtat1.getEtat()) {
                 if (!res.contains(getVueTransition(t))) res.add(getVueTransition(t));
             }
@@ -217,7 +217,7 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
 
         ligne = bf.readLine();
 
-        ArrayList<Etat<T>> etats = new ArrayList<>(machine.getEtats());
+        ArrayList<Etat> etats = new ArrayList<>(machine.getEtats());
 
         while (ligne != null) {
             String[] split = ligne.split(" ");
@@ -229,8 +229,8 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
                 double yPos = Double.parseDouble(split[2]);
                 int labelNumEtat = Integer.parseInt(split[3]);
 
-                Etat<T> etat = etats.get(numEtat);
-                VueEtat<T> vueEtat = getVueEtat(etat);
+                Etat etat = etats.get(numEtat);
+                VueEtat vueEtat = getVueEtat(etat);
 
                 if (vueEtat != null) {
                     //Permet de faire que les coordonnées de la vue etat soient positives
@@ -268,10 +268,10 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
         bufferedWriter.write("###");
         bufferedWriter.newLine();
 
-        ArrayList<Etat<T>> etats = new ArrayList<>(machine.getEtats());
+        ArrayList<Etat> etats = new ArrayList<>(machine.getEtats());
 
-        for (Etat<T> e : etats) {
-            VueEtat<T> vueEtat = getVueEtat(e);
+        for (Etat e : etats) {
+            VueEtat vueEtat = getVueEtat(e);
             if (vueEtat != null) {
                 bufferedWriter.write(etats.indexOf(e) + " " + vueEtat.getLayoutX() + " " +
                         vueEtat.getLayoutY() + " " + vueEtat.getLabelNumEtat().getText());
@@ -295,8 +295,8 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
      * Deselectionne toutes les vues etats
      */
     public void deSelectionnerVuesEtat() {
-        for (Etat<T> e : machine.getEtats()) {
-            VueEtat<T> vueEtat = getVueEtat(e);
+        for (Etat e : machine.getEtats()) {
+            VueEtat vueEtat = getVueEtat(e);
             if (vueEtat != null) vueEtat.deSelectionner();
         }
     }
@@ -305,8 +305,8 @@ public abstract class VueMachine<T extends Transition<T>> extends Pane {
      * Deselectionne toutes les vue transitions
      */
     public void deSelectionnerVuesTransition() {
-        for (T t : machine.getTransitions()) {
-            VueTransition<T> vueTransition = getVueTransition(t);
+        for (Transition t : machine.getTransitions()) {
+            VueTransition vueTransition = getVueTransition(t);
             if (vueTransition != null) vueTransition.deSelectionner();
         }
     }

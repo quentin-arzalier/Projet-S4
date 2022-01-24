@@ -4,19 +4,20 @@ import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import machines.logique.Etat;
 import machines.logique.Machine;
+import machines.logique.Transition;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
-public class MachineTuring extends Machine<TransitionMT> {
+public class MachineTuring extends Machine {
     private ArrayList<Character> ruban;
     private ChangeListener<Integer> listenerValueTaskLancer;
     private int teteLecture;
     private Task<Integer> taskLancer;
 
-    public MachineTuring(Set<Etat<TransitionMT>> etats) {
+    public MachineTuring(Set<Etat> etats) {
         super(etats);
         teteLecture = 1;
         ruban = new ArrayList<>(Arrays.asList('#', '#', '#'));
@@ -41,9 +42,9 @@ public class MachineTuring extends Machine<TransitionMT> {
         int nbEtat = Integer.parseInt(bf.readLine());
 
         for (int i = 0; i < nbEtat; i++) {
-            getEtats().add(new Etat<>());
+            getEtats().add(new Etat());
         }
-        ArrayList<Etat<TransitionMT>> etats = new ArrayList<>(getEtats());
+        ArrayList<Etat> etats = new ArrayList<>(getEtats());
         String ligne = bf.readLine();
 
         while (!(ligne == null || ligne.contains("###"))) {
@@ -92,7 +93,7 @@ public class MachineTuring extends Machine<TransitionMT> {
         bufferedWriter.write(String.valueOf(getEtats().size()));
         bufferedWriter.newLine();
 
-        ArrayList<Etat<TransitionMT>> etats = new ArrayList<>(getEtats());
+        ArrayList<Etat> etats = new ArrayList<>(getEtats());
 
         //ecriture etat initial
         if (getEtatInitial() != null) bufferedWriter.write("initial " + etats.indexOf(getEtatInitial()));
@@ -100,7 +101,7 @@ public class MachineTuring extends Machine<TransitionMT> {
         bufferedWriter.newLine();
 
         //ecriture etats terminaux
-        for (Etat<TransitionMT> etat : etats) {
+        for (Etat etat : etats) {
             if (etat.estTerminal()) {
                 bufferedWriter.write("terminal " + etats.indexOf(etat));
                 bufferedWriter.newLine();
@@ -108,9 +109,9 @@ public class MachineTuring extends Machine<TransitionMT> {
         }
 
         //ecriture transitions
-        for (Etat<TransitionMT> etat : etats) {
-            Set<TransitionMT> transitions = etat.getListeTransitions();
-            for (TransitionMT t : transitions) {
+        for (Etat etat : etats) {
+            Set<Transition> transitions = etat.getListeTransitions();
+            for (Transition t : transitions) {
                 bufferedWriter.write(etats.indexOf(t.getEtatDepart()) + " " + t.getEtiquette() + " " +
                         etats.indexOf(t.getEtatArrivee()) + " " + t.getNouvelleLettre() + " " + t.getMouvement());
                 bufferedWriter.newLine();
@@ -211,18 +212,18 @@ public class MachineTuring extends Machine<TransitionMT> {
         }
     }
 
-    public Etat<TransitionMT> getEtatActif() {
-        for (Etat<TransitionMT> etat : getEtats()) {
+    public Etat getEtatActif() {
+        for (Etat etat : getEtats()) {
             if (etat.estActif()) return etat;
         }
         return null;
     }
 
     private void step(char lettre) {
-        Etat<TransitionMT> etatActif = getEtatActif();
+        Etat etatActif = getEtatActif();
         if (etatActif != null) {
-            TransitionMT transEtape = null;
-            for (TransitionMT trans : etatActif.getListeTransitions()) {
+            Transition transEtape = null;
+            for (Transition trans : etatActif.getListeTransitions()) {
                 if (trans.getEtiquette() == lettre) transEtape = trans;
             }
             if (transEtape != null) {
@@ -244,8 +245,8 @@ public class MachineTuring extends Machine<TransitionMT> {
         else return getEtatActif().estTerminal();
     }
 
-    public Etat<TransitionMT> getEtatInitial() {
-        for (Etat<TransitionMT> etat : getEtats()) {
+    public Etat getEtatInitial() {
+        for (Etat etat : getEtats()) {
             if (etat.estInitial()) return etat;
         }
         return null;

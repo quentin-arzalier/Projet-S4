@@ -20,6 +20,7 @@ import machines.gui.VueMachine;
 import machines.gui.VuePrincipale;
 import machines.gui.VueTransition;
 import machines.logique.Etat;
+import machines.logique.Transition;
 import machines.logique.automates.Automate;
 import machines.logique.automates.TransitionAtmt;
 
@@ -33,7 +34,7 @@ import java.util.HashSet;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
-public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
+public class VuePrincipaleAtmt extends VuePrincipale {
     private ToolBar barreDeMenu;
     private HBox hBoxLancerAutomate;
     private HBox hBoxAjoutTransition;
@@ -89,8 +90,8 @@ public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
      */
     @Override
     public void supprimerTransitionsSelectionnees() {
-        HashSet<VueTransition<TransitionAtmt>> vuesTransitionADeDelectionner = new HashSet<>();
-        for (VueTransition<TransitionAtmt> vueTransition : vueAutomate.getVuesTransitionSelectionnes()) {
+        HashSet<VueTransition> vuesTransitionADeDelectionner = new HashSet<>();
+        for (VueTransition vueTransition : vueAutomate.getVuesTransitionSelectionnes()) {
             if (vueAutomate.getVuesTransition(vueTransition.getVueEtatDep(), vueTransition.getVueEtatFin())
                     .size() == 1) {
                 vueTransition.getVueEtatDep().getEtat().supprimerTransition(vueTransition.getTransition());
@@ -102,7 +103,7 @@ public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
 
         if (vueAutomate.getVuesTransitionSelectionnes().size() > 0) {
             ObservableList<VueTransitionAtmt> vueTransitionAtmts = FXCollections.observableArrayList();
-            for (VueTransition<TransitionAtmt> vueTransition : vueAutomate.getVuesTransitionSelectionnes()) {
+            for (VueTransition vueTransition : vueAutomate.getVuesTransitionSelectionnes()) {
                 if (vueTransition instanceof VueTransitionAtmt)
                     vueTransitionAtmts.add((VueTransitionAtmt) vueTransition);
             }
@@ -122,7 +123,7 @@ public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
      */
     @Override
     public void ajouterTransition() {
-        ObservableList<VueEtat<TransitionAtmt>> vuesEtatSelectionnes = vueAutomate.getVuesEtatSelectionnes();
+        ObservableList<VueEtat> vuesEtatSelectionnes = vueAutomate.getVuesEtatSelectionnes();
         if (vuesEtatSelectionnes.size() > 2 || vuesEtatSelectionnes.size() < 1) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Problème ajout transition");
@@ -131,13 +132,13 @@ public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
             alert.showAndWait();
         } else {
             String etiquette = getTextFieldEtiquette().getText();
-            VueEtat<TransitionAtmt> vueEtatDep = vuesEtatSelectionnes.get(0);
-            VueEtat<TransitionAtmt> vueEtatArrivee;
+            VueEtat vueEtatDep = vuesEtatSelectionnes.get(0);
+            VueEtat vueEtatArrivee;
             if (vuesEtatSelectionnes.size() == 1) vueEtatArrivee = vueEtatDep;
             else vueEtatArrivee = vuesEtatSelectionnes.get(1);
             if (etiquette.length() >= 1) {
                 boolean nouvelleTrans = true;
-                for (TransitionAtmt t : vueAutomate.getAutomate().getTransitions()) {
+                for (Transition t : vueAutomate.getAutomate().getTransitions()) {
                     if (t.getEtatDepart() == vueEtatDep.getEtat() && t.getEtatArrivee() == vueEtatArrivee.getEtat() &&
                             t.getEtiquette() == etiquette.charAt(
                                     0)) {
@@ -159,7 +160,7 @@ public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
     @Override
     public void ajouterEtat() {
         vueAutomate.getAutomate()
-                .ajouterEtat(new Etat<>(getCheckBoxEstInitial().isSelected(), getCheckBoxEstTerminal().isSelected()));
+                .ajouterEtat(new Etat(getCheckBoxEstInitial().isSelected(), getCheckBoxEstTerminal().isSelected()));
     }
 
     private void initListenersAndActions() {
@@ -273,7 +274,7 @@ public class VuePrincipaleAtmt extends VuePrincipale<TransitionAtmt> {
      * {@inheritDoc}
      */
     @Override
-    public VueMachine<TransitionAtmt> creerVueMachine() {
+    public VueMachine creerVueMachine() {
         vueAutomate = new VueAutomate(new Automate(), this);
         return vueAutomate;
     }

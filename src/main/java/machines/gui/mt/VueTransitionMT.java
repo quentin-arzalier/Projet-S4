@@ -2,13 +2,14 @@ package machines.gui.mt;
 
 import javafx.beans.binding.DoubleBinding;
 import machines.gui.VueTransition;
+import machines.logique.Transition;
 import machines.logique.mt.TransitionMT;
 
-public class VueTransitionMT extends VueTransition<TransitionMT> {
-    private TransitionMT transitionMT;
+public class VueTransitionMT extends VueTransition {
+    private Transition transitionMT;
     private VueMT vueMT;
 
-    public VueTransitionMT(TransitionMT transition, VueMT vueMachine) {
+    public VueTransitionMT(Transition transition, VueMT vueMachine) {
         super(transition, vueMachine);
         this.transitionMT = transition;
         this.vueMT = vueMachine;
@@ -32,7 +33,7 @@ public class VueTransitionMT extends VueTransition<TransitionMT> {
         return vueMT;
     }
 
-    public TransitionMT getTransitionMT() {
+    public Transition getTransitionMT() {
         return transitionMT;
     }
 

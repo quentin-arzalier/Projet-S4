@@ -19,6 +19,7 @@ import machines.gui.VueMachine;
 import machines.gui.VuePrincipale;
 import machines.gui.VueTransition;
 import machines.logique.Etat;
+import machines.logique.Transition;
 import machines.logique.mt.MachineTuring;
 import machines.logique.mt.Mouvement;
 import machines.logique.mt.TransitionMT;
@@ -33,7 +34,7 @@ import java.util.HashSet;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
-public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
+public class VuePrincipaleMT extends VuePrincipale {
     private ToolBar barreDeMenu;
     private HBox hBoxLancerMachine;
     private HBox hBoxAjoutTransition;
@@ -64,8 +65,8 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
         return change;
     };
     private EventHandler<ActionEvent> eventSetInitial = actionEvent -> {
-        ObservableList<VueEtat<TransitionMT>> vueEtatsSelect = vueMT.getVuesEtatSelectionnes();
-        Etat<TransitionMT> etatInitial = vueMT.getMachineTuring().getEtatInitial();
+        ObservableList<VueEtat> vueEtatsSelect = vueMT.getVuesEtatSelectionnes();
+        Etat etatInitial = vueMT.getMachineTuring().getEtatInitial();
         if (vueEtatsSelect.size() > 0) {
             if (etatInitial != null)
                 vueMT.getMachineTuring().getEtatInitial().setEstInitial(false);
@@ -124,7 +125,7 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
      * {@inheritDoc}
      */
     @Override
-    public VueMachine<TransitionMT> creerVueMachine() {
+    public VueMachine creerVueMachine() {
         vueMT = new VueMT(new MachineTuring(), this);
         return vueMT;
     }
@@ -250,8 +251,8 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
      */
     @Override
     public void supprimerTransitionsSelectionnees() {
-        HashSet<VueTransition<TransitionMT>> vuesTransitionADeDelectionner = new HashSet<>();
-        for (VueTransition<TransitionMT> vueTransition : vueMT.getVuesTransitionSelectionnes()) {
+        HashSet<VueTransition> vuesTransitionADeDelectionner = new HashSet<>();
+        for (VueTransition vueTransition : vueMT.getVuesTransitionSelectionnes()) {
             if (vueMT.getVuesTransition(vueTransition.getVueEtatDep(), vueTransition.getVueEtatFin())
                     .size() == 1) {
                 vueTransition.getVueEtatDep().getEtat().supprimerTransition(vueTransition.getTransition());
@@ -263,7 +264,7 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
 
         if (vueMT.getVuesTransitionSelectionnes().size() > 0) {
             ObservableList<VueTransitionMT> vueTransitionMTs = FXCollections.observableArrayList();
-            for (VueTransition<TransitionMT> vueTransition : vueMT.getVuesTransitionSelectionnes()) {
+            for (VueTransition vueTransition : vueMT.getVuesTransitionSelectionnes()) {
                 if (vueTransition instanceof VueTransitionMT) vueTransitionMTs.add((VueTransitionMT) vueTransition);
             }
 
@@ -293,7 +294,7 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
      */
     @Override
     public void ajouterTransition() {
-        ObservableList<VueEtat<TransitionMT>> vuesEtatSelectionnes = vueMT.getVuesEtatSelectionnes();
+        ObservableList<VueEtat> vuesEtatSelectionnes = vueMT.getVuesEtatSelectionnes();
         if (vuesEtatSelectionnes.size() > 2 || vuesEtatSelectionnes.size() < 1) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Problème ajout transition");
@@ -303,13 +304,13 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
         } else {
             String etiquette = getTextFieldEtiquette().getText();
             String nouvelleLettre = fieldNouvelleLettre.getText();
-            VueEtat<TransitionMT> vueEtatDep = vuesEtatSelectionnes.get(0);
-            VueEtat<TransitionMT> vueEtatArrivee;
+            VueEtat vueEtatDep = vuesEtatSelectionnes.get(0);
+            VueEtat vueEtatArrivee;
             if (vuesEtatSelectionnes.size() == 1) vueEtatArrivee = vueEtatDep;
             else vueEtatArrivee = vuesEtatSelectionnes.get(1);
             if (etiquette.length() >= 1) {
                 boolean nouvelleTrans = true;
-                for (TransitionMT t : vueMT.getMachineTuring().getTransitions()) {
+                for (Transition t : vueMT.getMachineTuring().getTransitions()) {
                     if (t.getEtatDepart() == vueEtatDep.getEtat() && t.getEtatArrivee() == vueEtatArrivee.getEtat() &&
                             t.getEtiquette() == etiquette.charAt(0)) {
                         nouvelleTrans = false;
@@ -332,7 +333,7 @@ public class VuePrincipaleMT extends VuePrincipale<TransitionMT> {
      */
     @Override
     public void ajouterEtat() {
-        vueMT.getMachineTuring().ajouterEtat(new Etat<>(false, getCheckBoxEstTerminal().isSelected()));
+        vueMT.getMachineTuring().ajouterEtat(new Etat(false, getCheckBoxEstTerminal().isSelected()));
     }
 
     private void initStyle() {

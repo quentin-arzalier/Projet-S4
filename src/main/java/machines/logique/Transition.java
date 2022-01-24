@@ -1,25 +1,31 @@
 package machines.logique;
 
-public abstract class Transition<T extends Transition<T>> {
-    private Etat<T> etatDepart;
-    private Etat<T> etatArrivee;
+import machines.logique.mt.Mouvement;
+
+public abstract class Transition {
+    private Etat etatDepart;
+    private Etat etatArrivee;
     private char etiquette;
 
-    public Transition(Etat<T> etatDepart, Etat<T> etatArrivee, char etiquette) {
+    public Transition(Etat etatDepart, Etat etatArrivee, char etiquette) {
         this.etatDepart = etatDepart;
         this.etatArrivee = etatArrivee;
         this.etiquette = etiquette;
     }
 
-    public Etat<T> getEtatDepart() {
+    public Etat getEtatDepart() {
         return etatDepart;
     }
 
-    public Etat<T> getEtatArrivee() {
+    public Etat getEtatArrivee() {
         return etatArrivee;
     }
 
     public char getEtiquette() {
         return etiquette;
     }
+
+    public abstract char getNouvelleLettre();
+
+    public abstract Mouvement getMouvement();
 }

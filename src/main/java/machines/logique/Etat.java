@@ -9,13 +9,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Etat<T extends Transition<T>> {
+public class Etat {
     private BooleanProperty estInitial;
     private BooleanProperty estTerminal;
     /**
      * Liste des transitions SORTANTES de l'etat
      */
-    private ObservableSet<T> listeTransitions;
+    private ObservableSet<Transition> listeTransitions;
     private BooleanProperty estActif;
 
     public Etat() {
@@ -39,7 +39,7 @@ public class Etat<T extends Transition<T>> {
      * @return true si la transition existe sinon false
      */
     public boolean existeTrans(char c) {
-        for (T transition : getListeTransitions()) {
+        for (Transition transition : getListeTransitions()) {
             if (transition.getEtiquette() == c) return true;
         }
         return false;
@@ -51,9 +51,9 @@ public class Etat<T extends Transition<T>> {
      * @param c lettre a tester
      * @return liste des etat qui peuvent etre atteint
      */
-    public Set<Etat<T>> cible(char c) {
-        Set<Etat<T>> resultat = new HashSet<>();
-        for (T t : getListeTransitions()) {
+    public Set<Etat> cible(char c) {
+        Set<Etat> resultat = new HashSet<>();
+        for (Transition t : getListeTransitions()) {
             if (t.getEtiquette() == c) resultat.add(t.getEtatArrivee());
         }
         return resultat;
@@ -66,19 +66,19 @@ public class Etat<T extends Transition<T>> {
         listeTransitions.clear();
     }
 
-    public void ajoutTransition(T transition) {
+    public void ajoutTransition(Transition transition) {
         listeTransitions.add(transition);
     }
 
-    public void ajoutTransition(Collection<T> transitions) {
+    public void ajoutTransition(Collection<Transition> transitions) {
         listeTransitions.addAll(transitions);
     }
 
-    public void supprimerTransition(T transition) {
+    public void supprimerTransition(Transition transition) {
         listeTransitions.remove(transition);
     }
 
-    public void supprimerTransition(Collection<T> transitions) {
+    public void supprimerTransition(Collection<Transition> transitions) {
         listeTransitions.removeAll(transitions);
     }
 
@@ -126,11 +126,11 @@ public class Etat<T extends Transition<T>> {
         return estActif.getValue();
     }
 
-    public Set<T> getListeTransitions() {
+    public Set<Transition> getListeTransitions() {
         return listeTransitions;
     }
 
-    public ObservableSet<T> transitionsProperty() {
+    public ObservableSet<Transition> transitionsProperty() {
         return listeTransitions;
     }
 }

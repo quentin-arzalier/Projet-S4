@@ -12,9 +12,9 @@ import machines.logique.Transition;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class VuePrincipale<T extends Transition<T>> extends BorderPane {
+public abstract class VuePrincipale extends BorderPane {
     private App app;
-    private VueMachine<T> vueMachine;
+    private VueMachine vueMachine;
 
     private boolean ctrlPresse;
     private Button boutonCreerEtat;
@@ -80,9 +80,9 @@ public abstract class VuePrincipale<T extends Transition<T>> extends BorderPane 
      *
      * @return vueMachine creee
      */
-    public abstract VueMachine<T> creerVueMachine();
+    public abstract VueMachine creerVueMachine();
 
-    public VueMachine<T> getVueMachine() {
+    public VueMachine getVueMachine() {
         return vueMachine;
     }
 
@@ -94,7 +94,7 @@ public abstract class VuePrincipale<T extends Transition<T>> extends BorderPane 
      * Permet d'enlever le lien entre les checkboxes er la propriete selectionne des etats
      */
     public void unbindCheckBoxes() {
-        for (Etat<T> e : vueMachine.getMachine().getEtats()) {
+        for (Etat e : vueMachine.getMachine().getEtats()) {
             checkBoxEstInitial.selectedProperty().unbindBidirectional(e.estInitialProperty());
             checkBoxEstTerminal.selectedProperty().unbindBidirectional(e.estTerminalProperty());
         }
@@ -104,11 +104,11 @@ public abstract class VuePrincipale<T extends Transition<T>> extends BorderPane 
      * Supprime tous les etat selectionnes
      */
     public void supprimerEtatsSelectionnes() {
-        ArrayList<VueEtat<T>> vuesEtatADeSelectionner = new ArrayList<>();
-        for (VueEtat<T> vueEtat : vueMachine.getVuesEtatSelectionnes()) {
-            for (T t : vueMachine.getMachine().getTransitions()) {
+        ArrayList<VueEtat> vuesEtatADeSelectionner = new ArrayList<>();
+        for (VueEtat vueEtat : vueMachine.getVuesEtatSelectionnes()) {
+            for (Transition t : vueMachine.getMachine().getTransitions()) {
                 if (t.getEtatDepart() == vueEtat.getEtat() || t.getEtatArrivee() == vueEtat.getEtat()) {
-                    VueTransition<T> vueTransition = vueMachine.getVueTransition(t);
+                    VueTransition vueTransition = vueMachine.getVueTransition(t);
                     if (vueTransition != null) vueTransition.deSelectionner();
                     t.getEtatDepart().supprimerTransition(t);
                 }
@@ -123,8 +123,8 @@ public abstract class VuePrincipale<T extends Transition<T>> extends BorderPane 
      * Supprime toutes les transition selectionnes
      */
     public void supprimerTransitionsSelectionnees() {
-        HashSet<VueTransition<T>> vuesTransitionADeDelectionner = new HashSet<>();
-        for (VueTransition<T> vueTransition : vueMachine.getVuesTransitionSelectionnes()) {
+        HashSet<VueTransition> vuesTransitionADeDelectionner = new HashSet<>();
+        for (VueTransition vueTransition : vueMachine.getVuesTransitionSelectionnes()) {
             vueTransition.getVueEtatDep().getEtat().supprimerTransition(vueTransition.getTransition());
             vuesTransitionADeDelectionner.add(vueTransition);
         }

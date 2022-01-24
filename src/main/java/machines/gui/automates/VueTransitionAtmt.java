@@ -2,13 +2,14 @@ package machines.gui.automates;
 
 import javafx.beans.binding.DoubleBinding;
 import machines.gui.VueTransition;
+import machines.logique.Transition;
 import machines.logique.automates.TransitionAtmt;
 
-public class VueTransitionAtmt extends VueTransition<TransitionAtmt> {
-    private TransitionAtmt transitionAtmt;
+public class VueTransitionAtmt extends VueTransition {
+    private Transition transitionAtmt;
     private VueAutomate vueAutomate;
 
-    public VueTransitionAtmt(TransitionAtmt transition, VueAutomate vueAutomate) {
+    public VueTransitionAtmt(Transition transition, VueAutomate vueAutomate) {
         super(transition, vueAutomate);
         this.vueAutomate = vueAutomate;
         transitionAtmt = transition;
@@ -16,7 +17,7 @@ public class VueTransitionAtmt extends VueTransition<TransitionAtmt> {
     }
 
 
-    public TransitionAtmt getTransitionAtmt() {
+    public Transition getTransitionAtmt() {
         return transitionAtmt;
     }
 

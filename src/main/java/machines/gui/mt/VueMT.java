@@ -3,13 +3,14 @@ package machines.gui.mt;
 import javafx.collections.ListChangeListener;
 import machines.gui.VueEtat;
 import machines.gui.VueMachine;
+import machines.logique.Transition;
 import machines.logique.mt.MachineTuring;
 import machines.logique.mt.TransitionMT;
 
-public class VueMT extends VueMachine<TransitionMT> {
+public class VueMT extends VueMachine {
     private MachineTuring machineTuring;
     private VuePrincipaleMT vuePrincipaleMT;
-    private ListChangeListener<VueEtat<TransitionMT>> miseAJourVuesEtatSelectionnes =
+    private ListChangeListener<VueEtat> miseAJourVuesEtatSelectionnes =
             change -> vuePrincipaleMT.gethBoxAjoutTransition()
                     .setVisible(getVuesEtatSelectionnes().size() <= 2 && getVuesEtatSelectionnes().size() >= 1);
 
@@ -33,12 +34,12 @@ public class VueMT extends VueMachine<TransitionMT> {
      * {@inheritDoc}
      */
     @Override
-    public void ajoutVueTransition(TransitionMT transition) {
+    public void ajoutVueTransition(Transition transition) {
         VueTransitionMT vueTransition = new VueTransitionMT(transition, VueMT.this);
         getChildren().add(vueTransition);
         vueTransition.toBack();
         int nbrTrans = 0;
-        for (TransitionMT t : transition.getEtatDepart().getListeTransitions()) {
+        for (Transition t : transition.getEtatDepart().getListeTransitions()) {
             if (t.getEtatArrivee() == transition.getEtatArrivee()) nbrTrans++;
         }
         vueTransition.positionnerLabelEtiquette(nbrTrans - 1);
